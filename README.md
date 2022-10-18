@@ -2,7 +2,7 @@
 ### Overview
 ---
 FedGrad: Mitigating Backdoor Attacks in Federated Learning through Local
-Ultimate Gradients Inspection. \\
+Ultimate Gradients Inspection. \
 Federated learning (FL) enables multiple clients to train a model without compromising sensitive data. The decentralized nature of FL makes it susceptible to adversarial attacks, especially backdoor insertion during training. Recently, the edge-case backdoor attack employing the tail of the data distribution has been proposed as a powerful one, raising questions about the shortfall in current defenses’ robustness guarantees. Specifically, most existing defenses cannot eliminate edge-case backdoor attacks or suffer from trade-off between backdoor-defending effectiveness and overall performance on the primary task. To tackle this challenge, we propose FedGrad, a novel backdoor-resistant defense for FL that is resistant to cutting-edge backdoor attacks, including the edge-case attack, and performs effectively under heterogeneous client data and a large number of compromised clients. FedGrad is designed as a two-layer filtering mechanism, which thoroughly analyzes the ultimate layer’s gradient to identify suspicious local updates and remove them from the aggregation process. We evaluate FedGrad under different attack scenarios and show that it significantly outperforms state-of-the-art defense mechanisms.
 <!-- ## Attack of the Tails: Yes, You Really Can Backdoor Federated Learning -->
 
@@ -97,7 +97,7 @@ python simulated_averaging.py \
 ``` 
 
 ### Acknowledgement
-We would like to send a big Acknowledgement to the authors of "Attack of the Tails: Yes, You Really Can Backdoor Federated Learning"
+We would like to send a big Acknowledgement to the authors of "Attack of the Tails: Yes, You Really Can Backdoor Federated Learning".\
 [OOD_Federated_Learning](https://github.com/ksreenivasan/OOD_Federated_Learning)
 <!-- ### Experiment guide (by Dung):
 ---
