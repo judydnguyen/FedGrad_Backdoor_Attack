@@ -93,7 +93,7 @@ python simulated_averaging.py \
 --pdr 0.33 \
 --degree_nonIID 0.5 \
 --use_trustworthy True \
---device=cuda
+--device=cuda:1
 ``` 
 
 ### Acknowledgement

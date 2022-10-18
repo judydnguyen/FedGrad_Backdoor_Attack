@@ -1,0 +1,13 @@
+INFO:root:Running Attack of the tails with args: Namespace(adv_lr=0.02, adversarial_local_training_period=2, attack_case='edge-case', attack_method='blackbox', attacker_percent=0.25, attacker_pool_size=100, batch_size=32, dataset='cifar10', defense_method='no-defense', degree_nonIID=0.5, device='cuda', epochs=14, eps=2.0, fl_mode='fixed-pool', fl_round=500, fraction=0.1, gamma=0.998, instance='benchmark', local_train_period=2, log_folder='logging', log_interval=100, lr=0.02, model='vgg9', model_replacement=False, no_cuda=False, norm_bound=2.0, num_nets=200, part_nets_per_round=10, pdr=0.33, poison_type='southwest', project_frequency=10, prox_attack=False, rand_seed=7, seed=1, stddev=0.025, test_batch_size=1000, use_trustworthy=True, wandb_group='Scenario 1')
+INFO:root:cuda
+INFO:root:==> Building model..
+INFO:root:Seeded everything
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Traceback (most recent call last):
+  File "simulated_averaging.py", line 147, in <module>
+    poisoned_train_loader, vanilla_test_loader, targetted_task_test_loader, num_dps_poisoned_dataset, clean_train_loader = load_poisoned_dataset_updated(args=args)
+  File "/mnt/disk1/dungnt-vaipe/FedGrad_Backdoor_Attack/utils.py", line 1018, in load_poisoned_dataset_updated
+    saved_southwest_dataset_train = pickle.load(train_f)
+_pickle.UnpicklingError: pickle data was truncated

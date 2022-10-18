@@ -410,7 +410,6 @@ class RFA(Defense):
     def geometric_median_objective(self, median, points, alphas):
         """Compute geometric median objective."""
         return sum([alpha * self.l2dist(median, p) for alpha, p in zip(alphas, points)])
-
 class GeoMedian(Defense):
     """
     we implement the robust aggregator of Geometric Median (GM)
@@ -562,8 +561,7 @@ class GeoMedian(Defense):
     
 class FedGrad(Defense):
     """
-    we implement the robust aggregator at: https://papers.nips.cc/paper/6617-machine-learning-with-adversaries-byzantine-tolerant-gradient-descent.pdf
-    and we integrate both krum and multi-krum in this single class
+    FedGrad by DungNT
     """
     def __init__(self, total_workers, num_workers, num_adv, num_valid = 1, instance="benchmark", use_trustworthy=False, *args, **kwargs):
         self.num_valid = num_valid
@@ -707,7 +705,7 @@ class FedGrad(Defense):
         print(f"Total computation time of the 2nd layer is: {layer2_inf_t}")
         pseudo_final_suspicious_idxs = np.union1d(suspicious_idxs_2, suspicious_idxs_1).flatten()
 
-        if round >= 50:
+        if round >= self.switch_round:
             final_suspicious_idxs = pseudo_final_suspicious_idxs
         print(f"[Combination-result] predicted suspicious set is: {final_suspicious_idxs}")
 
@@ -718,14 +716,15 @@ class FedGrad(Defense):
             #     g_idx = g_user_indices[idx]
             #     if np.average(self.trustworthy_scores[g_idx]) >= self.trustworthy_threshold:
             #         filtered_suspicious_idxs.remove(idx)
-            filtered_suspicious_idxs = [idx for idx in final_suspicious_idxs if np.average(self.trustworthy_scores[g_user_indices[idx]]) >= self.trustworthy_threshold]
+            filtered_suspicious_idxs = [idx for idx in final_suspicious_idxs if np.average(self.trustworthy_scores[g_user_indices[idx]]) < self.trustworthy_threshold]
        
         if not filtered_suspicious_idxs:
-            filtered_suspicious_idxs = suspicious_idxs_1   
+            filtered_suspicious_idxs = suspicious_idxs_1 
+        print(f"[Filtered-result] predicted suspicious set is: {filtered_suspicious_idxs}")     
                  
         if self.use_trustworthy: # used for ablation study
             final_suspicious_idxs = filtered_suspicious_idxs
-        print(f"[Filtered-result] predicted suspicious set is: {filtered_suspicious_idxs}")   
+        print(f"[Final-result] predicted suspicious set is: {final_suspicious_idxs}")   
 
         for idx, g_idx in enumerate(g_user_indices):
             if idx in final_suspicious_idxs:
