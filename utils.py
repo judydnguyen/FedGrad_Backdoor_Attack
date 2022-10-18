@@ -245,7 +245,6 @@ def partition_data(dataset, datadir, partition, n_nets, alpha, args):
                 #sanity_check_counter = 0
                 for k, v in net_dataidx_map.items():
                     remaining_indices = [i for i in v if i not in green_car_indices]
-                    #sanity_check_counter += len(remaining_indices)
                     net_dataidx_map[k] = remaining_indices
 
             #logger.info("Remaining total number of data points : {}".format(sanity_check_counter))
@@ -445,21 +444,7 @@ def load_poisoned_dataset(args):
         unique, counts = np.unique(labels_clean_set, return_counts=True)
         cnt_clean_label = dict(zip(unique, counts))
         cnt_clean_label["edge-case"] = num_dps_poisoned_dataset
-        print(cnt_clean_label)
-        # df = pd.DataFrame(cnt_clean_label)
-        # print(df)
-        labs = list(cnt_clean_label.keys())
-        labs = list(map(str, labs))
-        cnts = list(cnt_clean_label.values())
-        print("labs: ", labs)    
-        # creating the bar plot
-        barlist = plt.bar(labs, cnts, color ='maroon')
-        barlist[-1].set_color('b')
-        
-        # plt.xlabel("Label distribution")
-        # plt.ylabel("No. of sample per label")
-        # plt.title("Poison client data's distribution")
-        # plt.savefig("emnist_distribution_label.png")
+
     
     elif args.dataset == "cifar10":
         if args.poison_type == "southwest":
@@ -537,23 +522,6 @@ def load_poisoned_dataset(args):
             unique, counts = np.unique(labels_clean_set, return_counts=True)
             cnt_clean_label = dict(zip(unique, counts))
             cnt_clean_label["southwest"] = 200
-            print(cnt_clean_label)
-            # df = pd.DataFrame(cnt_clean_label)
-            # print(df)
-            labs= list(cnt_clean_label.keys())
-            labs = list(map(str, labs))
-            cnts = list(cnt_clean_label.values())
-            print("labs: ", labs)
-            print("cnts: ", cnts)
-            # fig = plt.figure(figsize = (10, 5))
-            
-            # # creating the bar plot
-            # plt.bar(labs, cnts, color ='maroon')
-            
-            # plt.xlabel("Label distribution")
-            # plt.ylabel("No. of sample per label")
-            # plt.title("Poison client data's distribution")
-            # plt.savefig("distribution_label_200_sample.png")
             
             poisoned_trainset.data = np.append(poisoned_trainset.data, saved_southwest_dataset_train, axis=0)
             poisoned_trainset.targets = np.append(poisoned_trainset.targets, sampled_targets_array_train, axis=0)
@@ -632,11 +600,6 @@ def load_poisoned_dataset(args):
             #    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),])
 
             trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
-
-            #poisoned_trainset = copy.deepcopy(trainset)
-            #  class CIFAR10_Poisoned(data.Dataset):
-            #def __init__(self, root, clean_indices, poisoned_indices, dataidxs=None, train=True, transform_clean=None,
-            #    transform_poison=None, target_transform=None, download=False):
 
             with open('./saved_datasets/southwest_images_new_train.pkl', 'rb') as train_f:
                 saved_southwest_dataset_train = pickle.load(train_f)
@@ -974,26 +937,6 @@ def load_poisoned_dataset_updated(args):
 
             targetted_task_test_loader = torch.utils.data.DataLoader(ardis_test_dataset,
                 batch_size=args.test_batch_size, shuffle=False, **kwargs)
-                    # fig = plt.figure(figsize = (10, 5))
-                        
-        # clean_trainset = copy.deepcopy(poisoned_dataset)
-        # print("clean data target's shape: ", clean_trainset.targets.shape)
-        # labels_clean_set = clean_trainset.targets
-        # unique, counts = np.unique(labels_clean_set, return_counts=True)
-        # cnt_clean_label = dict(zip(unique, counts))
-        # cnt_clean_label["edge-case"] = total_poisoned_samples
-        # labs = list(cnt_clean_label.keys())
-        # labs = list(map(str, labs))
-        # cnts = list(cnt_clean_label.values())
-        # print("labs: ", labs)    
-        # # creating the bar plot
-        # barlist = plt.bar(labs, cnts, color ='maroon')
-        # barlist[-1].set_color('b')
-            
-        # plt.xlabel("Label distribution")
-        # plt.ylabel("No. of sample per label")
-        # plt.title("Poison client data's distribution")
-        # plt.savefig(f"emnist_distribution_label_dpr_{dpr}.png")
         
     elif args.dataset == "cifar10":
         num_sampled_data_points = 400 # M
@@ -1041,10 +984,7 @@ def load_poisoned_dataset_updated(args):
 
             # downsample the poisoned dataset #################
             if args.attack_case == "edge-case":
-                # num_sampled_data_points: total number of clean point in the whole poisoned set. 
                 num_sampled_poisoned_data_points = 200 # N
-                # num_sampled_poisoned_data_points = int(dpr*num_sampled_poisoned_data_points/(1.0-dpr))
-                # print(f"num_sampled_poisoned_data_points is: {num_sampled_poisoned_data_points}")
                 samped_poisoned_data_indices = np.random.choice(saved_southwest_dataset_train.shape[0],
                                                                 num_sampled_poisoned_data_points,
                                                                 replace=False)
@@ -1523,184 +1463,183 @@ def seed_experiment(seed=0):
     logger.info("Seeded everything")
 
 
-def get_logging_items(net_list, additional_net, custom_net_2, selected_node_indices, avg_net_prev, avg_net, attackers_idxs, fl_round):
-    logging_list = []
-    recorded_w_list = []
-    recorded_w_list.append(vectorize_net(additional_net))
+# def get_logging_items(net_list, additional_net, custom_net_2, selected_node_indices, avg_net_prev, avg_net, attackers_idxs, fl_round):
+#     logging_list = []
+#     recorded_w_list = []
+#     recorded_w_list.append(vectorize_net(additional_net))
     
-    for cm in net_list:
-        recorded_w_list.append(vectorize_net(cm))    
+#     for cm in net_list:
+#         recorded_w_list.append(vectorize_net(cm))    
     
-    for i,param in enumerate(additional_net.classifier.parameters()):
-        if i == 0:
-            with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
-                write = csv.writer(w_f)
-                write.writerow(param.data.cpu().numpy())
-    additional_item = [fl_round, 0, -3, list(additional_net.classifier.parameters())[1].data.cpu().numpy()]
-    logging_list.append(additional_item)
+#     for i,param in enumerate(additional_net.classifier.parameters()):
+#         if i == 0:
+#             with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
+#                 write = csv.writer(w_f)
+#                 write.writerow(param.data.cpu().numpy())
+#     additional_item = [fl_round, 0, -3, list(additional_net.classifier.parameters())[1].data.cpu().numpy()]
+#     logging_list.append(additional_item)
     
-    #CUSTOM NET 2
-    for i,param in enumerate(custom_net_2.classifier.parameters()):
-        if i == 0:
-            with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
-                write = csv.writer(w_f)
-                write.writerow(param.data.cpu().numpy())
-    additional_item_2 = [fl_round, 0, -4, list(custom_net_2.classifier.parameters())[1].data.cpu().numpy()]
-    logging_list.append(additional_item_2)
+#     #CUSTOM NET 2
+#     for i,param in enumerate(custom_net_2.classifier.parameters()):
+#         if i == 0:
+#             with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
+#                 write = csv.writer(w_f)
+#                 write.writerow(param.data.cpu().numpy())
+#     additional_item_2 = [fl_round, 0, -4, list(custom_net_2.classifier.parameters())[1].data.cpu().numpy()]
+#     logging_list.append(additional_item_2)
     
-    for net_idx, global_user_idx in enumerate(selected_node_indices):
-        #round id weights bias is-attacker
-        net = net_list[net_idx]
-        is_attacker = 0
+#     for net_idx, global_user_idx in enumerate(selected_node_indices):
+#         #round id weights bias is-attacker
+#         net = net_list[net_idx]
+#         is_attacker = 0
 
-        for idx, param in enumerate(net.classifier.parameters()):
-            if idx:
-                bias = param.data.cpu().numpy()
-            else:
-                weights = param.data.cpu().numpy()
-        with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
-            write = csv.writer(w_f)
-            write.writerow(weights)        
-        if global_user_idx in attackers_idxs:
-            is_attacker = 1
-        item = [fl_round, is_attacker, global_user_idx, bias]
-        logging_list.append(item)
+#         for idx, param in enumerate(net.classifier.parameters()):
+#             if idx:
+#                 bias = param.data.cpu().numpy()
+#             else:
+#                 weights = param.data.cpu().numpy()
+#         with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
+#             write = csv.writer(w_f)
+#             write.writerow(weights)        
+#         if global_user_idx in attackers_idxs:
+#             is_attacker = 1
+#         item = [fl_round, is_attacker, global_user_idx, bias]
+#         logging_list.append(item)
     
-    prev_avg_item = [fl_round, 0, -2, list(avg_net_prev.classifier.parameters())[1].data.cpu().numpy()] if avg_net_prev else [fl_round, 0, -2, None]
-    avg_item = [fl_round, 0, -1, list(avg_net.classifier.parameters())[1].data.cpu().numpy()]
+#     prev_avg_item = [fl_round, 0, -2, list(avg_net_prev.classifier.parameters())[1].data.cpu().numpy()] if avg_net_prev else [fl_round, 0, -2, None]
+#     avg_item = [fl_round, 0, -1, list(avg_net.classifier.parameters())[1].data.cpu().numpy()]
     
-    recorded_w_list.append(vectorize_net(avg_net_prev))
-    recorded_w_list.append(vectorize_net(avg_net)) 
+#     recorded_w_list.append(vectorize_net(avg_net_prev))
+#     recorded_w_list.append(vectorize_net(avg_net)) 
                 
-    for i,param in enumerate(avg_net_prev.classifier.parameters()):
-        if i == 0:
-            with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
-                write = csv.writer(w_f)
-                write.writerow(param.data.cpu().numpy())    
-    for i,param in enumerate(avg_net.classifier.parameters()):
-        if i == 0:
-            with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
-                write = csv.writer(w_f)
-                write.writerow(param.data.cpu().numpy())        
-    logging_list.append(prev_avg_item)
-    logging_list.append(avg_item)
-    return logging_list
+#     for i,param in enumerate(avg_net_prev.classifier.parameters()):
+#         if i == 0:
+#             with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
+#                 write = csv.writer(w_f)
+#                 write.writerow(param.data.cpu().numpy())    
+#     for i,param in enumerate(avg_net.classifier.parameters()):
+#         if i == 0:
+#             with open('logging/w_benchmark_01_200.csv', 'a+') as w_f:
+#                 write = csv.writer(w_f)
+#                 write.writerow(param.data.cpu().numpy())        
+#     logging_list.append(prev_avg_item)
+#     logging_list.append(avg_item)
+#     return logging_list
 
+# def get_logging_items_full_w(net_list, additional_net, custom_net_2, selected_node_indices, avg_net_prev, avg_net, attackers_idxs, fl_round):
+#     logging_list = []
+#     recorded_w_list = []
+#     print(f'[Dung] net_list_len: {len(net_list)}')
+#     recorded_w_list.append(additional_net.state_dict())
+#     recorded_w_list.append(custom_net_2.state_dict())
+#     for cm in net_list:
+#         recorded_w_list.append(cm.state_dict())
+#     recorded_w_list.append(avg_net_prev.state_dict())
+#     recorded_w_list.append(avg_net.state_dict())
 
-def get_logging_items_full_w(net_list, additional_net, custom_net_2, selected_node_indices, avg_net_prev, avg_net, attackers_idxs, fl_round):
-    logging_list = []
-    recorded_w_list = []
-    print(f'[Dung] net_list_len: {len(net_list)}')
-    recorded_w_list.append(additional_net.state_dict())
-    recorded_w_list.append(custom_net_2.state_dict())
-    for cm in net_list:
-        recorded_w_list.append(cm.state_dict())
-    recorded_w_list.append(avg_net_prev.state_dict())
-    recorded_w_list.append(avg_net.state_dict())
+#     ids = [-3, -4, *selected_node_indices, -2, -1]
 
-    ids = [-3, -4, *selected_node_indices, -2, -1]
+#     if not os.path.exists('logging/eps10_400'):
+#         os.makedirs('logging/eps10_400')
+#     for i, idx in enumerate(ids):
+#         torch.save(recorded_w_list[i], open(f'logging/eps10_400/{idx}_net.pth', 'wb'))
+#     # for i,param in enumerate(additional_net.classifier.parameters()):
+#     #     if i == 0:
+#     #         with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
+#     #             write = csv.writer(w_f)
+#     #             write.writerow(param.data.cpu().numpy())
+#     additional_item = [fl_round, 0, -3, list(additional_net.classifier.parameters())[1].data.cpu().numpy()]
+#     logging_list.append(additional_item)
+#     additional_item_2 = [fl_round, 0, -4, list(custom_net_2.classifier.parameters())[1].data.cpu().numpy()]
+#     logging_list.append(additional_item_2)
+#     for net_idx, global_user_idx in enumerate(selected_node_indices):
+#         #round id weights bias is-attacker
+#         net = net_list[net_idx]
+#         is_attacker = 0
+#         # bias = list(net.classifier.parameters())[0].data.cpu().numpy()
+#         # weights = list(net.classifier.parameters())[-1].data.cpu().numpy()
 
-    if not os.path.exists('logging/eps10_400'):
-        os.makedirs('logging/eps10_400')
-    for i, idx in enumerate(ids):
-        torch.save(recorded_w_list[i], open(f'logging/eps10_400/{idx}_net.pth', 'wb'))
-    # for i,param in enumerate(additional_net.classifier.parameters()):
-    #     if i == 0:
-    #         with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
-    #             write = csv.writer(w_f)
-    #             write.writerow(param.data.cpu().numpy())
-    additional_item = [fl_round, 0, -3, list(additional_net.classifier.parameters())[1].data.cpu().numpy()]
-    logging_list.append(additional_item)
-    additional_item_2 = [fl_round, 0, -4, list(custom_net_2.classifier.parameters())[1].data.cpu().numpy()]
-    logging_list.append(additional_item_2)
-    for net_idx, global_user_idx in enumerate(selected_node_indices):
-        #round id weights bias is-attacker
-        net = net_list[net_idx]
-        is_attacker = 0
-        # bias = list(net.classifier.parameters())[0].data.cpu().numpy()
-        # weights = list(net.classifier.parameters())[-1].data.cpu().numpy()
-
-        for idx, param in enumerate(net.classifier.parameters()):
-            if idx:
-                bias = param.data.cpu().numpy()
-            else:
-                weights = param.data.cpu().numpy()
-        # with open('logging/bias_benchmark.csv', 'a+') as bias_f:
-        #     write = csv.writer(bias_f)
-        #     write.writerow([bias])
-        # with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
-        #     write = csv.writer(w_f)
-        #     write.writerow(weights)        
-            # write.writerow([weight])
-        if global_user_idx in attackers_idxs:
-            is_attacker = 1
-        item = [fl_round, is_attacker, global_user_idx, bias]
-        logging_list.append(item)
+#         for idx, param in enumerate(net.classifier.parameters()):
+#             if idx:
+#                 bias = param.data.cpu().numpy()
+#             else:
+#                 weights = param.data.cpu().numpy()
+#         # with open('logging/bias_benchmark.csv', 'a+') as bias_f:
+#         #     write = csv.writer(bias_f)
+#         #     write.writerow([bias])
+#         # with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
+#         #     write = csv.writer(w_f)
+#         #     write.writerow(weights)        
+#             # write.writerow([weight])
+#         if global_user_idx in attackers_idxs:
+#             is_attacker = 1
+#         item = [fl_round, is_attacker, global_user_idx, bias]
+#         logging_list.append(item)
     
-    prev_avg_item = [fl_round, 0, -2, list(avg_net_prev.classifier.parameters())[1].data.cpu().numpy()] if avg_net_prev else [fl_round, 0, -2, None]
-    avg_item = [fl_round, 0, -1, list(avg_net.classifier.parameters())[1].data.cpu().numpy()]
+#     prev_avg_item = [fl_round, 0, -2, list(avg_net_prev.classifier.parameters())[1].data.cpu().numpy()] if avg_net_prev else [fl_round, 0, -2, None]
+#     avg_item = [fl_round, 0, -1, list(avg_net.classifier.parameters())[1].data.cpu().numpy()]
     
     
 
-    # with open('logging/flatten_w_benchmark.csv', 'a+') as w_f:
-    #     write = csv.writer(w_f)
-    #     for item_w in recorded_w_list:
-    #         write.writerow(item_w)    
+#     # with open('logging/flatten_w_benchmark.csv', 'a+') as w_f:
+#     #     write = csv.writer(w_f)
+#     #     for item_w in recorded_w_list:
+#     #         write.writerow(item_w)    
                 
-    # for i,param in enumerate(avg_net_prev.classifier.parameters()):
-    #     if i == 0:
-    #         with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
-    #             write = csv.writer(w_f)
-    #             write.writerow(param.data.cpu().numpy())    
-    # for i,param in enumerate(avg_net.classifier.parameters()):
-    #     if i == 0:
-    #         with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
-    #             write = csv.writer(w_f)
-    #             write.writerow(param.data.cpu().numpy())        
-    logging_list.append(prev_avg_item)
-    logging_list.append(avg_item)
-    return logging_list
+#     # for i,param in enumerate(avg_net_prev.classifier.parameters()):
+#     #     if i == 0:
+#     #         with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
+#     #             write = csv.writer(w_f)
+#     #             write.writerow(param.data.cpu().numpy())    
+#     # for i,param in enumerate(avg_net.classifier.parameters()):
+#     #     if i == 0:
+#     #         with open('logging/weight_benchmark_01.csv', 'a+') as w_f:
+#     #             write = csv.writer(w_f)
+#     #             write.writerow(param.data.cpu().numpy())        
+#     logging_list.append(prev_avg_item)
+#     logging_list.append(avg_item)
+#     return logging_list
          
-def get_logging_items_new(net_list, selected_node_indices, avg_net_prev, avg_net, exploration_net, g_attackers_idxs, fl_round):
-    logging_list = []
+# def get_logging_items_new(net_list, selected_node_indices, avg_net_prev, avg_net, exploration_net, g_attackers_idxs, fl_round):
+#     logging_list = []
     
-    for net_idx, global_user_idx in enumerate(selected_node_indices):
-        net = net_list[net_idx]
-        is_attacker = 0
-        w_log_file_name = 'logging/attacker_weight.csv' if global_user_idx in g_attackers_idxs else 'logging/normal_weight.csv'
+#     for net_idx, global_user_idx in enumerate(selected_node_indices):
+#         net = net_list[net_idx]
+#         is_attacker = 0
+#         w_log_file_name = 'logging/attacker_weight.csv' if global_user_idx in g_attackers_idxs else 'logging/normal_weight.csv'
         
-        # Different log for attackers
-        bias, weight = None, None
-        for idx, param in enumerate(net.classifier.parameters()):
-            if idx:
-                bias = param.data.cpu().numpy()
-            else:
-                weight = param.data.cpu().numpy()
-        with open(w_log_file_name, 'a+') as w_f:
-            write = csv.writer(w_f)
-            write.writerow(weight)   
+#         # Different log for attackers
+#         bias, weight = None, None
+#         for idx, param in enumerate(net.classifier.parameters()):
+#             if idx:
+#                 bias = param.data.cpu().numpy()
+#             else:
+#                 weight = param.data.cpu().numpy()
+#         with open(w_log_file_name, 'a+') as w_f:
+#             write = csv.writer(w_f)
+#             write.writerow(weight)   
         
-        #round id weights bias is-attacker
-        if global_user_idx in g_attackers_idxs:
-            is_attacker = 1
-        item = [fl_round, is_attacker, global_user_idx, bias]
-        logging_list.append(item)
-    prev_avg_item = [fl_round, 0, -2, list(avg_net_prev.classifier.parameters())[1].data.cpu().numpy()] if avg_net_prev else [fl_round, 0, -2, None]
-    avg_item = [fl_round, 0, -1, list(avg_net.classifier.parameters())[1].data.cpu().numpy()]
+#         #round id weights bias is-attacker
+#         if global_user_idx in g_attackers_idxs:
+#             is_attacker = 1
+#         item = [fl_round, is_attacker, global_user_idx, bias]
+#         logging_list.append(item)
+#     prev_avg_item = [fl_round, 0, -2, list(avg_net_prev.classifier.parameters())[1].data.cpu().numpy()] if avg_net_prev else [fl_round, 0, -2, None]
+#     avg_item = [fl_round, 0, -1, list(avg_net.classifier.parameters())[1].data.cpu().numpy()]
     
-    for i,param in enumerate(avg_net_prev.classifier.parameters()):
-        if i == 0:
-            with open('logging/normal_weight.csv', 'a+') as w_f:
-                write = csv.writer(w_f)
-                write.writerow(param.data.cpu().numpy())    
-    for i,param in enumerate(avg_net.classifier.parameters()):
-        if i == 0:
-            with open('logging/normal_weight.csv', 'a+') as w_f:
-                write = csv.writer(w_f)
-                write.writerow(param.data.cpu().numpy())        
-    logging_list.append(prev_avg_item)
-    logging_list.append(avg_item)
-    return logging_list
+#     for i,param in enumerate(avg_net_prev.classifier.parameters()):
+#         if i == 0:
+#             with open('logging/normal_weight.csv', 'a+') as w_f:
+#                 write = csv.writer(w_f)
+#                 write.writerow(param.data.cpu().numpy())    
+#     for i,param in enumerate(avg_net.classifier.parameters()):
+#         if i == 0:
+#             with open('logging/normal_weight.csv', 'a+') as w_f:
+#                 write = csv.writer(w_f)
+#                 write.writerow(param.data.cpu().numpy())        
+#     logging_list.append(prev_avg_item)
+#     logging_list.append(avg_item)
+#     return logging_list
 
 def calculate_sum_grad_diff(meta_data, num_cli=11, num_w=512, glob_update=None):
     v_x = [num_w * i for i in range(num_cli)]
@@ -1745,10 +1684,9 @@ def get_cs_on_base_net(weight_update, avg_weight, total_cli = 10):
     cs_list = []
     total_cli = len(weight_update)
     base_p = avg_weight.flatten()
-    print(f"base_p: {base_p}")
+    # print(f"base_p: {base_p}")
     for i in range(total_cli):
         point = weight_update[i].flatten()
-        # print("point: ", point)
         cs = dot(point, base_p)/(norm(point)*norm(base_p))
         cs_list.append(float(cs.flatten()))
     return cs_list

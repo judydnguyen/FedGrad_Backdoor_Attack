@@ -732,27 +732,27 @@ class FedGrad(Defense):
             else:
                 self.trustworthy_scores[g_idx].append(self.lambda_2)
         
-        # GET ADDITIONAL INFORMATION of TPR and FPR, TNR
-        # tp_fedgrad_pred = []
-        # for id_ in participated_attackers:
-        #     tp_fedgrad_pred.append(1.0 if id_ in final_suspicious_idxs else 0.0)
-        # fp_fegrad = len(final_suspicious_idxs) - sum(tp_fedgrad_pred)
+        #GET ADDITIONAL INFORMATION of TPR and FPR, TNR
+        tpr_fedgrad, fpr_fedgrad, tnr_fedgrad = 0.0, 0.0, 0.0
+        tp_fedgrad_pred = []
+        for id_ in participated_attackers:
+            tp_fedgrad_pred.append(1.0 if id_ in final_suspicious_idxs else 0.0)
+        fp_fegrad = len(final_suspicious_idxs) - sum(tp_fedgrad_pred)
         
         # Calculate true positive rate (TPR = TP/(TP+FN))
-        # total_positive = len(participated_attackers)
-        # total_negative = total_client - total_positive
-        # tpr_fedgrad = 1.0
-        # if total_positive > 0.0:
-        #     tpr_fedgrad = sum(tp_fedgrad_pred)/total_positive
-        # # False postive rate
-        # fpr_fedgrad = fp_fegrad/total_negative
-        # tnr_fedgrad = 1.0 - fpr_fedgrad
-        # freq_participated_attackers = [self.choosing_frequencies[g_idx] for g_idx in g_user_indices]
+        total_positive = len(participated_attackers)
+        total_negative = total_client - total_positive
+        tpr_fedgrad = 1.0
+        if total_positive > 0.0:
+            tpr_fedgrad = sum(tp_fedgrad_pred)/total_positive
+        # False postive rate
+        fpr_fedgrad = fp_fegrad/total_negative
+        tnr_fedgrad = 1.0 - fpr_fedgrad
         
         end_fedgrad_t = time.time()*1000
         fedgrad_t = end_fedgrad_t - start_fedgrad_t # finish calculating the computation time of FedGrad
         
-        tpr_fedgrad, fpr_fedgrad, tnr_fedgrad = 1.0, 1.0, 1.0
+        # tpr_fedgrad, fpr_fedgrad, tnr_fedgrad = 1.0, 1.0, 1.0
         neo_net_list = []
         neo_net_freq = []
         selected_net_indx = []

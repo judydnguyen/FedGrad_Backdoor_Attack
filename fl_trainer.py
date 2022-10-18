@@ -653,7 +653,8 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                                                         round=flr,
                                                         selected_attackers=selected_attackers,
                                                         model_name=self.model,
-                                                        device=self.device)   
+                                                        device=self.device) 
+                print(f"tpr_fedgrad, fpr_fedgrad: {tpr_fedgrad}, {fpr_fedgrad}")  
                 print("Selected Attackers in FL iteration-{}: {}".format(flr, selected_attackers))             
                 print("Predicted Attackers in FL iteration-{}: {}".format(flr, pred_g_attacker))            
             
