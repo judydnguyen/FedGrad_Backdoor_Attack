@@ -859,7 +859,7 @@ def load_poisoned_dataset(args):
 
 def load_poisoned_dataset_updated(args):
     use_cuda = not args.no_cuda and torch.cuda.is_available()
-    kwargs = {'num_workers': 0, 'pin_memory': True} if use_cuda else {}
+    kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
     # benign_train_data_loader = None
     # CHANGE CODE TO LOAD POISONED DATASET by Dung
     # default dpr: 0.33 for CIFAR-10 and 0.5 for EMNIST
@@ -1093,7 +1093,7 @@ def load_poisoned_dataset_updated(args):
 
             poisoned_train_loader = torch.utils.data.DataLoader(poisoned_trainset, batch_size=args.batch_size, shuffle=True)
             clean_train_loader = torch.utils.data.DataLoader(clean_trainset, batch_size=args.batch_size, shuffle=True)
-
+            testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
             poisoned_testset = copy.deepcopy(testset)
             poisoned_testset.data = saved_southwest_dataset_test
             poisoned_testset.targets = sampled_targets_array_test
